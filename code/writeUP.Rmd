@@ -1,0 +1,102 @@
+---
+title: "Wimbledon Championship Match Preview"
+author: "Eric Chuu"
+date: "July 15, 2017"
+output: html_document
+---
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+library("dplyr")
+library("reshape2")
+library("ggplot2")
+library("ggthemr")
+
+wimb = read.csv("allwimbledon.csv", stringsAsFactors = FALSE);
+r2f  = read.csv("pathToFinals.csv", stringsAsFactors = FALSE);
+r2f_norm = read.csv("pathToFinalsNormalized.csv", stringsAsFactors = FALSE);
+
+# visual 1-- double sided bar plot --------------------------------------------
+    # side by side comparison of road to final match statistics
+    # double-sided bar plot
+
+r2f_long = melt(r2f_norm, by = "NAME") # NAME, variable, value
+
+
+fed = ggplot(r2f_long, aes(x = variable)) + 
+      geom_bar(data = r2f_long[r2f_long$NAME == "FEDERER",],
+               aes(y = value, fill = value), stat = "identity")
+
+
+both_player = fed + geom_bar(data = r2f_long[r2f_long$NAME == "CILIC",], 
+               aes(y=-value, fill = -value), stat = 'identity') +
+    scale_x_discrete(limits = rev(levels(r2f_long$variable))) +
+    coord_flip() + labs(x = "", y = "") + theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
+    scale_fill_gradient2(low = "darkorchid4", mid = "white", high = "green4", 
+                         midpoint = 0, space = "rgb")
+```
+
+## Overview of the Match
+
+On Sunday afternoon, Roger Federer will meet Marin Cilic in the Wimbledon Finals, with Federer looking to win his 8th Wimbledon title. His opponent, the big-serving Croatian, has a monumental task at hand if he wants to win his maiden Wimbledon title. Looking at just the statistics, the outcome looks bleak for Cilic. Federer enters the championship match with a 30-2 record for the year, dwarfing the merits of Cilic’s 23-13 record for 2017. Federer is arguably playing some of the best tennis of his career,  and While Federer leads their head-to-head 6-1, this seemingly one-sided affair underestimates the threat that Cilic poses. Just last year, Federer went the distance with Cilic in the Wimbledon quarterfinals, with Federer coming back from a 2 sets to love deficit and prevailing in just over 3 hours. 
+
+Going into the final, Federer will have spent just under 10 hours on court, 4 hours less than Cilic, so expect Federer to have the fresher set of legs out there this afternoon. Both players are serving well, Federer winning 82% of the points when his first serve is in, with Cilic edging him out just slightly at 84%. One statistic that more clearly separates the two is is their winners to unforced errors ratio, with Federer’s 3.34 winners per unforced error, compared to Cilic’s 2.37. This is in part due to his improved backhand which saw flashes of his 2007 brilliance - some may argue that his backhand is the best it’s been in his career - during his semifinal match against Berdych. 
+
+```{r, echo = FALSE, waring = FALSE}
+both_player
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+# visual 3 --- line graph ------------------------------------------------------
+    # FSPW over the years
+    # RPW over years
+    # BPC over years
+
+wimb_sub = wimb[, c(1, 3:5)];
+
+wimb_long = melt(wimb_sub, id = "year");
+
+stat_years = ggplot(wimb_long, aes(x = year, y = value, colour = variable)) + geom_point() +
+    theme_bw() + geom_line() + scale_x_continuous(breaks = 2007:2017) +
+    labs(x = "Year", y = "Percentage", 
+         title = "Fed's Wimbledon Match Stats Over the Past Decade") +
+    geom_vline(xintercept = c(2007, 2009, 2012), linetype = "dotted") +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          legend.position = c(0.9, 0.4));
+```
+
+
+The name of the game for Cilic is his serve and his ability to win easy points with a 1-2 punch that works so well the Wimbledon’s grass. However, in order to maximize his chances of defeating the goliath at the other end of the court, he will need to maintain his break point conversion that has seen him through to his first Wimbledon final. In 2017, Cilic has been converting 33% of the break points he’s created, but this fortnight, he has brought this number to 43%, topping Federer’s 39%. If Cilic does not rise to the occasion, however, he cannot expect to maintain this level of play, as Federer has been playing lights out thus far, having not conceded a single set. 
+
+
+So if Federer has been so dominant, what can Cilic do to win this match? Recall their 2014 US Open semifinal match, where Cilic blew Federer off the court in straight sets, 6-3, 6-4, 6-4, and going on to win his first grand slam title. During that match, Cilic won 87% of his first serve points, and hit 40 winners to 26 unforced errors. Federer, on the other hand, showed up lacking his usual flair. He won only 69% of his first serve points and hit 27 winners to 27 unforced errors. For Cilic to have a hope of dismantling Federer, Cilic will need to reproduce another service barrage. Moreover, Cilic must find a way to stay in the longer rallies with Federer and prevent Federer from winning easy points off his groundstrokes.
+
+## In Depth Federer
+
+We switch gears now to take a deeper look at Federer’s run to the final. Since 2007, Federer has made 6 final appearances (7 including today’s match). Of those, Federer has won 3 titles, in 2007, 2009, and in 2012. Federer has spent less time getting to the final this year than all of his previous trips to the final, with 2007 being the exception (W/O vs. Haas in 3R). His ruthless efficiency on court is accompanied with solid offensive stats. 
+
+Of the years (in the past 10) that he’s won, his 1st serve points won this tournament, 82%, is second only to his victory in 2009, 87%
+
+His 2nd serve points won, 63%, is the highest it has been in the past 5 years, along with the years he’s taken home the trophy
+
+The only aspect of his game that is lacking is his break point conversion, which sits at 39% for the tournament. Even this, however, should not be assessed with too heavy a heart. Looking at the figure below, we see that since 2011, the initial stages of Federer’s “decline,” Federer’s break point conversion has slipped. This year, however, we see that it has bounced back a little, which we can attribute to the renewed consistency in his backhand. 
+
+```{r, echo = FALSE, waring = FALSE}
+stat_years
+```
+
+With all this being said, the championship match is Federer’s to lose. As long as Federer continues to play as well as he has, there is no reason not to believe that he will hoist his 19th grand slam trophy today. For Cilic to win, he must:
+
+Produce a serving clinic, win 85% of his first serve points
+
+Limit Federer’s winner to unforced error ratio to 2:1
+
+Maintain his current break point conversion
+
+## Prediction:
+Before the sun sets, Roger Federer will lift the Wimbledon trophy yet again for a record-breaking 8th time. Cilic’s booming serve will present some difficulty for Federer, but the swiss maestro will defy Father Time to show us, once again, why he is the GOAT. __FEDERER IN 4.__
+
+
+
+
+
